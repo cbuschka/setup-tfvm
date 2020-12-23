@@ -1,4 +1,4 @@
-name: 'cbuschka - Setup Terraform Version Manager'
+name: 'Setup tfvm for auto managed terraform version'
 description: 'Sets up tfvm in your GitHub Actions workflow.'
 author: 'Cornelius Buschka'
 runs:
