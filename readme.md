@@ -21,7 +21,7 @@ steps:
   - name: setup tfvm
     uses: cbuschka/setup-tfvm@v1
 
-  - name: run terraform version
+  - name: run terraform
     run: terraform init && terraform apply --auto-approve
 ```
 
