@@ -1,4 +1,6 @@
-# setup-tfvm - Github Action to setup [Terraform Version Manager](https://github.com/cbuschka/tfvm)
+# setup-tfvm
+
+### Github Action to setup [Terraform Version Manager](https://github.com/cbuschka/tfvm)
 
 ## Usage
 
