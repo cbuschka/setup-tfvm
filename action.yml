@@ -1,0 +1,9 @@
+name: 'cbuschka - Setup Terraform Version Manager'
+description: 'Sets up tfvm in your GitHub Actions workflow.'
+author: 'Cornelius Buschka'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'terminal'
+  color: 'purple'

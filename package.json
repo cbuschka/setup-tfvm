@@ -1,0 +1,23 @@
+{
+  "name": "setup-tfvm",
+  "version": "0.0.1",
+  "description": "Setup Terraform Version Manager CLI for GitHub Actions",
+  "license": "APL-2.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js --out dist"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "@actions/io": "^1.0.2",
+    "@actions/tool-cache": "^1.6.1",
+    "@hashicorp/js-releases": "^1.2.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.25.1"
+  }
+}

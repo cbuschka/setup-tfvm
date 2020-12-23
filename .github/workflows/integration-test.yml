@@ -1,0 +1,31 @@
+name: 'integration-test'
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: setup tfvm
+      uses: ./
+
+    - name: write .terraform-version file
+      run: echo "v0.14.3" > .terraform-version
+
+    - name: run tfvm
+      run: tfvm info
+
+    - name: run terraform version
+      run: terraform version

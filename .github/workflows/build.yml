@@ -1,0 +1,32 @@
+name: 'build'
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: setup node 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: install npm
+      run: npm clean-install
+
+    - name: build
+      if: runner.os == 'Linux'
+      run: |
+        npm run build
