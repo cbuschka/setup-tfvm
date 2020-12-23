@@ -1,4 +1,5 @@
 # setup-tfvm
+[![Build](https://github.com/cbuschka/setup-tfvm/workflows/build/badge.svg)](https://github.com/cbuschka/setup-tfvm) [![Latest Release](https://img.shields.io/github/release/cbuschka/setup-tfvm.svg)](https://github.com/cbuschka/setup-tfvm/releases) [![License](https://img.shields.io/github/license/cbuschka/setup-tfvm.svg)](https://github.com/cbuschka/setup-tfvm/blob/main/license.txt)
 
 ### Github Action to setup [tfvm](https://github.com/cbuschka/tfvm)
 
