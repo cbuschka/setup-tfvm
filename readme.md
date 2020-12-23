@@ -3,28 +3,12 @@
 ## Usage
 
 ```yaml
-name: 'deploy'
+steps:
+    - name: setup tfvm
+      uses: cbuschka/setup-tfvm@v1
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-jobs:
-  test:
-    name: deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: setup tfvm
-        uses: cbuschka/setup-tfvm@v1
-
-      - name: run terraform version
-        run: terraform init && terraform apply --auto-approve
+    - name: run terraform version
+      run: terraform init && terraform apply --auto-approve
 ```
 
 ## License
