@@ -13,7 +13,7 @@
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@actions/io": "^1.0.2",
-    "@actions/tool-cache": "^1.6.1",
+    "@actions/tool-cache": "^1.7.0",
     "@hashicorp/js-releases": "^1.2.1",
     "node-fetch": "^2.6.1"
   },
