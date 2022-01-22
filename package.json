@@ -15,7 +15,7 @@
     "@actions/io": "^1.0.2",
     "@actions/tool-cache": "^1.6.1",
     "@hashicorp/js-releases": "^1.2.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^3.1.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.25.1"
