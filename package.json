@@ -14,13 +14,13 @@
   "author": "",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
+    "@actions/github": "^5.1.1",
     "@actions/io": "^1.0.2",
-    "@actions/tool-cache": "^1.6.1",
+    "@actions/tool-cache": "^2.0.1",
     "@hashicorp/js-releases": "^1.2.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.25.1"
+    "@vercel/ncc": "^0.34.0"
   }
 }
