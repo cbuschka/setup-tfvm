@@ -7,8 +7,8 @@
   "scripts": {
     "build": "ncc build index.js --out dist"
   },
-  "engines" : {
-    "node" : ">=16.0.0"
+  "engines": {
+    "node": ">=16.0.0"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "node-fetch": "^2.0.0"
   },
   "devDependencies": {
+    "encoding": "^0.1.0",
     "@vercel/ncc": "^0.34.0"
   }
 }
