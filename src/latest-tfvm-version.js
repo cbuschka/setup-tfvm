@@ -6,7 +6,7 @@ const getLatestTfvmVersion = async () => {
   const LATEST_RELEASE_URL = "https://api.github.com/repos/cbuschka/tfvm/releases/latest";
   return retry(async (bail) => {
     try {
-      log.info("Fetching latest tfvm version from "+LATEST_RELEASE_URL+"...");
+      log.debug("Fetching latest tfvm version from "+LATEST_RELEASE_URL+"...");
       const response = await fetch(LATEST_RELEASE_URL, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
