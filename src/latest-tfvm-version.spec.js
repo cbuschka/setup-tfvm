@@ -9,14 +9,14 @@ beforeEach(() => {
 
 describe("latest tfvm version from github", () => {
   test('happy path', async () => {
-    fetch.mockResponseOnce(JSON.stringify({tag_name:"v1.0.3"}));
+    fetch.mockResponse(JSON.stringify({tag_name:"v1.0.3"}));
 
     const version = await getLatestTfvmVersion();
     expect(version).toBe("v1.0.3");
   });
 
   test('handles failed request', async () => {
-    fetch.mockRejectOnce(new Error("API is down"))
+    fetch.mockReject(new Error("API is down"))
     try {
       await getLatestTfvmVersion();
       throw new Error("Call should have failed.");
@@ -26,7 +26,7 @@ describe("latest tfvm version from github", () => {
   });
 
   test('handles tag_name missing', async () => {
-    fetch.mockResponseOnce(JSON.stringify({}));
+    fetch.mockResponse(JSON.stringify({}));
 
     try {
       await getLatestTfvmVersion();
