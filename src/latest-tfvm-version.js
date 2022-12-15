@@ -15,8 +15,7 @@ const getLatestTfvmVersion = async () => {
 
       const version = body["tag_name"];
       if (!version) {
-        log.error("Response body: "+JSON.stringify(body));
-        throw new Error("no tag_name");
+        throw new Error("no tag_name; body="+JSON.stringify(body));
       }
 
       if ( !/^v\d+\.\d+(\.\d+)?$/.test(version) ) {
