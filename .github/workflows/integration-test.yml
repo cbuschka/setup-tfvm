@@ -18,6 +18,8 @@ jobs:
 
     - name: setup tfvm
       uses: ./
+      env:
+        ACTIONS_STEP_DEBUG: true
 
     - name: write .terraform-version file
       run: echo "v0.14.3" > .terraform-version
