@@ -5,10 +5,10 @@ const setupTfvm = require('./src/setup-tfvm');
 
 const main = async () => {
   try {
-    log.setLogger(core);
     await setupTfvm();
-    core.info("tfvm/terraform ready.");
+    log.info("tfvm/terraform ready.");
   } catch (error) {
+    log.error(error);
     core.error(error);
     core.setFailed(error.message);
   }
