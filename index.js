@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 
-const setupTfvm = require('./lib/setup-tfvm');
+const setupTfvm = require('./src/setup-tfvm');
 
 const main = async () => {
   try {
