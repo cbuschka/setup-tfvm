@@ -26,6 +26,10 @@ jobs:
     - name: install npm
       run: npm clean-install
 
+    - name: test
+      run: |
+        npm run test
+
     - name: build
       if: runner.os == 'Linux'
       run: |
