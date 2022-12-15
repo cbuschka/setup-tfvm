@@ -1,115 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 8107:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const fs = (__nccwpck_require__(7147).promises);
-const os = __nccwpck_require__(2037);
-const path = __nccwpck_require__(1017);
-const fetch = __nccwpck_require__(467);
-const platform = __nccwpck_require__(9238);
-
-const core = __nccwpck_require__(2186);
-const tc = __nccwpck_require__(7784);
-
-const getLatestVersion = async () => {
-  const LATEST_RELEASE_URL = "https://api.github.com/repos/cbuschka/tfvm/releases/latest";
-  const response = await fetch(LATEST_RELEASE_URL, {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json'},
-  });
-  const body = await response.json();
-  const version = body["tag_name"];
-  if (!version) {
-    throw new Error("Getting latest tfvm release failed.");
-  }
-  return version;
-};
-
-const getDownloadUrl = async () => {
-  const version = await getLatestVersion();
-  return `https://github.com/cbuschka/tfvm/releases/download/${version}/tfvm-${platform.os}_${platform.arch}${platform.ext}`;
-};
-
-async function downloadTfvm() {
-  const url = await getDownloadUrl();
-
-  core.debug(`Download url for tfvm is ${url}...`);
-  return await tc.downloadTool(url);
-}
-
-module.exports = downloadTfvm;
-
-
-/***/ }),
-
-/***/ 9238:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const os = __nccwpck_require__(2037);
-
-const getArch = () => {
-  const osArch = os.arch()
-  const mappings = {
-    x32: '386',
-    x64: 'amd64'
-  };
-  return mappings[osArch] || osArch;
-}
-
-const getOs = () => {
-  const osPlatform = os.platform();
-  const mappings = {
-    win32: 'windows'
-  };
-  return mappings[osPlatform] || osPlatform;
-};
-
-const getPlatform = () => {
-  const os = getOs();
-  const arch = getArch();
-  const ext = os === "windows" ? ".exe" : "";
-  return {os, arch, ext};
-}
-
-module.exports = getPlatform();
-
-
-/***/ }),
-
-/***/ 1817:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const path = __nccwpck_require__(1017);
-const core = __nccwpck_require__(2186);
-const downloadTfvm = __nccwpck_require__(8107);
-const fs = (__nccwpck_require__(7147).promises);
-const platform = __nccwpck_require__(9238);
-
-const setupTfvm = async () => {
-  const tempFilePath = await downloadTfvm();
-  const tempDirPath = path.dirname(tempFilePath);
-  const tfvmPath = path.join(tempDirPath, `tfvm${platform.ext}`);
-  const terraformPath = path.join(tempDirPath, `terraform${platform.ext}`);
-
-  await fs.rename(tempFilePath, tfvmPath);
-
-  if (platform.os === "windows") {
-    await fs.copyFile(tfvmPath, terraformPath);
-  } else {
-    await fs.symlink(tfvmPath, terraformPath);
-    await fs.chmod(tfvmPath, 0o755);
-  }
-
-  core.addPath(tempDirPath);
-};
-
-module.exports = setupTfvm;
-
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -13647,6 +13538,142 @@ module.exports.implForWrapper = function (wrapper) {
 
 /***/ }),
 
+/***/ 4892:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = (__nccwpck_require__(7147).promises);
+const os = __nccwpck_require__(2037);
+const path = __nccwpck_require__(1017);
+const fetch = __nccwpck_require__(467);
+const platform = __nccwpck_require__(3390);
+const getLatestTfvmVersion = __nccwpck_require__(7070);
+const getTfvmDownloadUrl = __nccwpck_require__(8475);
+const core = __nccwpck_require__(2186);
+const tc = __nccwpck_require__(7784);
+
+async function downloadTfvm() {
+  const version = await getLatestTfvmVersion();
+  const url = await getTfvmDownloadUrl(version);
+
+  core.debug(`Download url for tfvm is ${url}...`);
+  return await tc.downloadTool(url);
+}
+
+module.exports = downloadTfvm;
+
+
+/***/ }),
+
+/***/ 7070:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fetch = __nccwpck_require__(467);
+
+const getLatestTfvmVersion = async () => {
+  const LATEST_RELEASE_URL = "https://api.github.com/repos/cbuschka/tfvm/releases/latest";
+  let response = null;
+  try {
+    response = await fetch(LATEST_RELEASE_URL, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+    });
+  } catch( err ) {
+    throw new Error("Getting latest tfvm release failed ("+err.message+").");
+  }
+ 
+  const body = await response.json();
+  const version = body["tag_name"];
+  if (!version) {
+    throw new Error("Getting latest tfvm release failed (no tag_name).");
+  }
+  return version;
+};
+
+module.exports = getLatestTfvmVersion;
+
+
+/***/ }),
+
+/***/ 3390:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const os = __nccwpck_require__(2037);
+
+const getArch = () => {
+  const osArch = os.arch()
+  const mappings = {
+    x32: '386',
+    x64: 'amd64'
+  };
+  return mappings[osArch] || osArch;
+}
+
+const getOs = () => {
+  const osPlatform = os.platform();
+  const mappings = {
+    win32: 'windows'
+  };
+  return mappings[osPlatform] || osPlatform;
+};
+
+const getPlatform = () => {
+  const os = getOs();
+  const arch = getArch();
+  const ext = os === "windows" ? ".exe" : "";
+  return {os, arch, ext};
+}
+
+module.exports = getPlatform();
+
+
+/***/ }),
+
+/***/ 8403:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const path = __nccwpck_require__(1017);
+const core = __nccwpck_require__(2186);
+const downloadTfvm = __nccwpck_require__(4892);
+const fs = (__nccwpck_require__(7147).promises);
+const platform = __nccwpck_require__(3390);
+
+const setupTfvm = async () => {
+  const tempFilePath = await downloadTfvm();
+  const tempDirPath = path.dirname(tempFilePath);
+  const tfvmPath = path.join(tempDirPath, `tfvm${platform.ext}`);
+  const terraformPath = path.join(tempDirPath, `terraform${platform.ext}`);
+
+  await fs.rename(tempFilePath, tfvmPath);
+
+  if (platform.os === "windows") {
+    await fs.copyFile(tfvmPath, terraformPath);
+  } else {
+    await fs.symlink(tfvmPath, terraformPath);
+    await fs.chmod(tfvmPath, 0o755);
+  }
+
+  core.addPath(tempDirPath);
+};
+
+module.exports = setupTfvm;
+
+
+/***/ }),
+
+/***/ 8475:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const platform = __nccwpck_require__(3390);
+
+const getTfvmDownloadUrl = async (version) => {
+  return `https://github.com/cbuschka/tfvm/releases/download/${version}/tfvm-${platform.os}_${platform.arch}${platform.ext}`;
+};
+
+module.exports = getTfvmDownloadUrl;
+
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -13914,7 +13941,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 
-const setupTfvm = __nccwpck_require__(1817);
+const setupTfvm = __nccwpck_require__(8403);
 
 const main = async () => {
   try {
