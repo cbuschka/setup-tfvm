@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+env:
+  ACTIONS_STEP_DEBUG: true
+
+
 jobs:
   test:
     name: Test
