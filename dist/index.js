@@ -7,28 +7,15 @@
 const fs = (__nccwpck_require__(7147).promises);
 const os = __nccwpck_require__(2037);
 const path = __nccwpck_require__(1017);
-const fetch = __nccwpck_require__(467);
 const platform = __nccwpck_require__(9238);
 
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
 
-const getLatestVersion = async () => {
-  const LATEST_RELEASE_URL = "https://api.github.com/repos/cbuschka/tfvm/releases/latest";
-  const response = await fetch(LATEST_RELEASE_URL, {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json'},
-  });
-  const body = await response.json();
-  const version = body["tag_name"];
-  if (!version) {
-    throw new Error("Getting latest tfvm release failed.");
-  }
-  return version;
-};
+const getLatestTfvmVersion = __nccwpck_require__(3736);
 
 const getDownloadUrl = async () => {
-  const version = await getLatestVersion();
+  const version = await getLatestTfvmVersion();
   return `https://github.com/cbuschka/tfvm/releases/download/${version}/tfvm-${platform.os}_${platform.arch}${platform.ext}`;
 };
 
@@ -40,6 +27,34 @@ async function downloadTfvm() {
 }
 
 module.exports = downloadTfvm;
+
+
+/***/ }),
+
+/***/ 3736:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fetch = __nccwpck_require__(467);
+const core = __nccwpck_require__(2186);
+
+const FALLBACK_VERSION = "v0.24.0";
+
+const getLatestTfvmVersion = async () => {
+  const LATEST_RELEASE_URL = "https://api.github.com/repos/cbuschka/tfvm/releases/latest";
+  const response = await fetch(LATEST_RELEASE_URL, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+  });
+  const body = await response.json();
+  const version = body["tag_name"];
+  if (!version) {
+    core.warning("Getting latest tfvm release failed (no tag_name). Using fallback version.");
+    return FALLBACK_VERSION;
+  }
+  return version;
+};
+
+module.exports = getLatestTfvmVersion;
 
 
 /***/ }),
