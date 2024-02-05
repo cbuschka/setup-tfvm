@@ -2,7 +2,7 @@ name: 'Setup tfvm for auto managed terraform version'
 description: 'Sets up tfvm in your GitHub Actions workflow.'
 author: 'Cornelius Buschka'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'terminal'

@@ -14,13 +14,13 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: setup tfvm
       uses: ./
 
     - name: write .terraform-version file
-      run: echo "v0.14.3" > .terraform-version
+      run: echo "1.7.2" > .terraform-version
 
     - name: run tfvm
       run: tfvm info
