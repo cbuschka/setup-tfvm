@@ -1,0 +1,116 @@
+name: Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      RELEASE_VERSION:
+        description: 'Release version (semantic versioning)'
+        required: true
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Release tags
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set RELEASE_VERSION variable
+        shell: bash
+        run: |
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' ]]; then
+            echo "RELEASE_VERSION=${{ github.event.inputs.RELEASE_VERSION }}" >> $GITHUB_ENV
+          elif [[ ${{ github.event_name }} == 'push' ]]; then
+            TAG_REF=${GITHUB_REF#refs/tags/v}
+            echo "RELEASE_VERSION=$TAG_REF" >> $GITHUB_ENV
+          fi
+
+      - name: Validate RELEASE_VERSION format
+        shell: bash
+        run: |
+          if ! [[ ${{ env.RELEASE_VERSION }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version must follow semantic versioning format (https://semver.org/)"
+            exit 1
+          fi
+
+      - name: Set Release Tag Env Variable
+        shell: bash
+        run: |
+          echo "RELEASE_TAG=v${{ env.RELEASE_VERSION }}" >> "${GITHUB_ENV}"
+
+      - name: Check if tag already exists
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          if [[ $(git tag -l ${{ env.RELEASE_TAG }}) ]]; then
+            echo "::error::Tag '${{ env.RELEASE_TAG }}' already exists."
+            exit 1
+          fi
+
+      - name: Get latest tag
+        id: get_previous_tag
+        shell: bash
+        run: |
+          git fetch --tags
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' ]]; then
+            # tag not yet created
+            echo "PREVIOUS_TAG=$(git tag -l --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)" >> "${GITHUB_ENV}"
+          elif [[ ${{ github.event_name }} == 'push' ]]; then
+            # tag already created and pushed
+            echo "PREVIOUS_TAG=$(git tag -l --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 2 | tail -n 1)" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Create and push RELEASE_VERSION tag
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          git tag ${{ env.RELEASE_TAG }} HEAD
+          git push origin ${{ env.RELEASE_TAG }}
+
+      - name: Update major version tag
+        shell: bash
+        run: |
+          MAJOR_TAG="v$(echo "${{ env.RELEASE_VERSION }}" | cut -d '.' -f1)"
+          git tag -d "${MAJOR_TAG}"
+          git push origin ":refs/tags/${MAJOR_TAG}" || true # Delete remote tag if it exists
+          git tag "${MAJOR_TAG}"
+          git push origin "${MAJOR_TAG}"
+
+      - name: Create Release Changelog
+        shell: bash
+        run: |
+          echo "Changes in this Release: (\`${{ env.PREVIOUS_TAG }}..${{ env.RELEASE_TAG }}\`)" > release-changelog.md
+
+          if [ -z "${{ env.PREVIOUS_TAG }}" ]; then
+            # First release
+            git log --pretty=format:'- %s' >> release-changelog.md
+          else
+            # Regular release
+            git log ${{ env.PREVIOUS_TAG }}..${{ env.RELEASE_TAG }} --pretty=format:'- %s' >> release-changelog.md
+          fi
+
+      - name: Create GitHub Release
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ env.RELEASE_TAG }} \
+            --title "${{ env.RELEASE_TAG }}" \
+            --notes-file release-changelog.md
+
+      - name: Print Result
+        shell: bash
+        run: |
+          FINISHED_TIME=$(date +'%Y-%m-%d %H:%M:%S %Z')
+          cat >> $GITHUB_STEP_SUMMARY <<EOB
+          ## Release of \`${{ github.repository }}\`
+          > Release Timestamp: ${FINISHED_TIME}
+          > Release Reference: [${{ env.RELEASE_TAG }}](${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ env.RELEASE_TAG }})
+          EOB
